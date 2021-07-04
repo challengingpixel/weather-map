@@ -1,22 +1,60 @@
-import React, { useState } from 'react'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react'
 import { GoogleMap, withScriptjs, withGoogleMap, Marker, InfoWindow } from 'react-google-maps';
 import citiesData from '../data/bg.json'
 
 // Map
 function Map() {
+  const API_KEY = '6f287b6d54bee8794a41d7776558222c'
   // Selected city state
   const [selectedCity, setSelectedCity] = useState(null)
+  const [data, setData] = useState({
+    temperature: '',
+    humidity: '',
+    pressure: '',
+    feelsLike: '',
+    // icon: ''
+  })
+  const [icon, setIcon] = useState({})
+  
+  const fetchCurrentWeather =(city)=> {
+    axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${(city.lat)}&lon=${(city.lng)}&appid=${API_KEY}&units=metric`)
+    .then(res=> {
+      console.log(res.data, 'dataaaaa')
+      setData({...data, 
+        temperature: res.data.main.temp,
+        humidity: res.data.main.humidity,
+        pressure: res.data.main.pressure,
+        feelsLike: res.data.main.feels_like
+      })
+    })
+    console.log(data.temperature, 'tamparatumparaaaaaaa')
+  }
+
+  useEffect(() => {
+    citiesData.map((city)=> {
+      axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${(city.lat)}&lon=${(city.lng)}&appid=6f287b6d54bee8794a41d7776558222c&units=metric`)
+      .then(res=> {
+        // setData({...data, icon: res.data.weather[0].icon})
+        setIcon(res.data.weather[0].icon)
+      })
+    })
+  }, [])
+
+  console.log(icon, 'iconnnnnnnnn nadvorrrr skrosss')
 
   return <GoogleMap
     defaultZoom={7}
     defaultCenter={{ lat: 42.733883, lng: 25.485830 }}>
     {citiesData.map((city) => (
       <Marker
-        key={city.city}
+        key={city.id}
         position={{ lat: parseFloat(city.lat), lng: parseFloat(city.lng) }}
         onClick={()=> {
-          setSelectedCity(city)
+          setSelectedCity(city);
+          fetchCurrentWeather(city);
         }}
+        // icon={{url: `http://openweathermap.org/img/wn/${icon}@2x.png` }}
       />
     ))}
     {selectedCity && (
@@ -26,7 +64,13 @@ function Map() {
           setSelectedCity(null)
         }}
       >
-        <span>city details</span>
+        <ul style={{textAlign: 'left'}}>
+          <li>Temperature: {data.temperature}&deg;</li>
+          <li>Humidity: {data.humidity}%</li>
+          <li>pressure: {data.pressure}hPa</li> 
+          <li>Feels like: {data.feelsLike}&deg;</li>
+          <li>Icon: {icon}</li>
+        </ul>
       </InfoWindow>
     )}
   </GoogleMap>
