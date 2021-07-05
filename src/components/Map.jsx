@@ -3,8 +3,9 @@ import React, { useState } from 'react'
 import { GoogleMap, withScriptjs, withGoogleMap, Marker, InfoWindow } from 'react-google-maps'
 import citiesData from '../data/bg.json'
 import { weatherService } from '../services/WeatherService'
-import InfoData from './InfoData'
 import WeeklyWeather from './WeeklyWeather'
+import {styles} from '../styles/MapViewStyles'
+import WeatherCard from './WeatherCard'
 
 /**
  * Google Map component
@@ -22,6 +23,9 @@ function Map() {
     pressure: '',
     feelsLike: '',
     daily: '',
+    icon: '',
+    clouds: '',
+    windSpeed: ''
   })
 
   // Weather data on click
@@ -34,6 +38,9 @@ function Map() {
         pressure: res.data.current.pressure,
         feelsLike: res.data.current.feels_like,
         daily: res.data.daily,
+        icon: res.data.current.weather[0].icon,
+        clouds: res.data.current.clouds,
+        windSpeed: res.data.current.wind_speed
       })
     })
   }
@@ -44,7 +51,7 @@ function Map() {
   }
 
   return (
-    <div>
+    <>
       <GoogleMap
       defaultZoom={7}
       defaultCenter={{ lat: 42.733883, lng: 25.485830 }}>
@@ -56,7 +63,7 @@ function Map() {
             setSelectedCity(city);
             fetchCurrentWeather(city);
           }}
-          // icon={{url: `http://openweathermap.org/img/wn/${getIconbyCity(city)}@2x.png` }}
+          // icon={{url: `http://openweathermap.org/img/wn/${data.icon}@2x.png` }}
         />
       ))}
 
@@ -68,7 +75,7 @@ function Map() {
             setSelectedCity(null)
           }}
         >
-          <InfoData data={data}/>
+          <WeatherCard data={data}/>
         </InfoWindow>
       )}
     </GoogleMap>
@@ -77,7 +84,7 @@ function Map() {
     {data.daily &&
       <WeeklyWeather data={data} getDay={getDay}/>
     }
-  </div>
+  </>
   )
 }
 // HOF WrappedMap
@@ -88,14 +95,13 @@ const WrappedMap = withScriptjs(withGoogleMap(Map))
  * @returns {JSX.Element}
  */
 export default function MainMap() {
+  const classes = styles()
   return (
-    <div className="App" style={{ width: '100vw', height: '100vh' }}>
       <WrappedMap
         googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyDxSOukAxfevdUOkNuBbN5LtK0AFi0drBM"
         loadingElement={<div style={{ height: `100%` }} />}
-        containerElement={<div style={{ height: `400px` }} />}
-        mapElement={<div style={{ height: `100%` }} />}
+        containerElement={<div className={classes.rootContainer} />}
+        mapElement={<div className={classes.rootMapElement} />}
       />
-    </div>
   );
 }
