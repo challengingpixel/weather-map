@@ -1,22 +1,30 @@
-import React, { useEffect, useState } from 'react'
-import { GoogleMap, withScriptjs, withGoogleMap, Marker, InfoWindow } from 'react-google-maps';
+import moment from 'moment'
+import React, { useState } from 'react'
+import { GoogleMap, withScriptjs, withGoogleMap, Marker, InfoWindow } from 'react-google-maps'
 import citiesData from '../data/bg.json'
-import { weatherService } from '../services/WeatherService';
-import InfoData from './InfoData';
+import { weatherService } from '../services/WeatherService'
+import InfoData from './InfoData'
+import WeeklyWeather from './WeeklyWeather'
 
-// Map
+/**
+ * Google Map component
+ * @returns {JSX.Element}
+ * @author petar.todorovski
+ */
 function Map() {
   // Selected city state
   const [selectedCity, setSelectedCity] = useState(null)
+
+  // Weather state
   const [data, setData] = useState({
     temperature: '',
     humidity: '',
     pressure: '',
     feelsLike: '',
-    daily: ''
+    daily: '',
   })
-  const [icon, setIcon] = useState({})
 
+  // Weather data on click
   const fetchCurrentWeather =(city)=> {
     weatherService(city)
     .then(res=> {
@@ -25,19 +33,15 @@ function Map() {
         humidity: res.data.current.humidity,
         pressure: res.data.current.pressure,
         feelsLike: res.data.current.feels_like,
-        daily: res.data.daily
+        daily: res.data.daily,
       })
     })
   }
 
-  // useEffect(() => {
-  //   citiesData.map((city)=> {
-  //     axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${(city.lat)}&lon=${(city.lng)}&appid=6f287b6d54bee8794a41d7776558222c&units=metric`)
-  //     .then(res=> {
-  //       setIcon(res.data.weather[0].icon)
-  //     })
-  //   })
-  // }, [])
+  // Get week day
+  const getDay =(dt)=> {
+    return moment(dt*1000).format('ddd')
+  }
 
   return (
     <div>
@@ -52,9 +56,11 @@ function Map() {
             setSelectedCity(city);
             fetchCurrentWeather(city);
           }}
-          // icon={{url: `http://openweathermap.org/img/wn/${icon}@2x.png` }}
+          // icon={{url: `http://openweathermap.org/img/wn/${getIconbyCity(city)}@2x.png` }}
         />
       ))}
+
+      {/* Map Popup component info weather details  */}
       {selectedCity && (
         <InfoWindow 
           position={{ lat: parseFloat(selectedCity.lat), lng: parseFloat(selectedCity.lng) }}
@@ -66,14 +72,21 @@ function Map() {
         </InfoWindow>
       )}
     </GoogleMap>
+
+    {/* Weather component for the next 7 days */}
+    {data.daily &&
+      <WeeklyWeather data={data} getDay={getDay}/>
+    }
   </div>
   )
 }
-
 // HOF WrappedMap
 const WrappedMap = withScriptjs(withGoogleMap(Map))
 
-// Main map
+/**
+ * Main map that returns map
+ * @returns {JSX.Element}
+ */
 export default function MainMap() {
   return (
     <div className="App" style={{ width: '100vw', height: '100vh' }}>
