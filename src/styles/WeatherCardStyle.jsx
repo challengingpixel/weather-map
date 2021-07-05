@@ -9,11 +9,11 @@ export const styles = makeStyles((theme) => createStyles({
         backdropFilter: 'blur(7px)',
         boxShadow: '10px 10px 10px rgba(30 30 30, 0.1)',
         borderRadius: theme.spacing(4),
+        zIndex: '9999999',
         '& .MuiCardMedia-img': {
             width: theme.spacing(10),
             height: theme.spacing(10),
             objectFit: 'contain',
-            paddingTop: theme.spacing(2.5),
             margin: '0 auto'
         }
     },

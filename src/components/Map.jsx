@@ -3,9 +3,9 @@ import React, { useState } from 'react'
 import { GoogleMap, withScriptjs, withGoogleMap, Marker, InfoWindow } from 'react-google-maps'
 import citiesData from '../data/bg.json'
 import { weatherService } from '../services/WeatherService'
-import InfoData from './InfoData'
 import WeeklyWeather from './WeeklyWeather'
-import {styles} from "../styles/MapViewStyles";
+import {styles} from '../styles/MapViewStyles'
+import WeatherCard from './WeatherCard'
 
 /**
  * Google Map component
@@ -23,6 +23,9 @@ function Map() {
     pressure: '',
     feelsLike: '',
     daily: '',
+    icon: '',
+    clouds: '',
+    windSpeed: ''
   })
 
   // Weather data on click
@@ -35,8 +38,10 @@ function Map() {
         pressure: res.data.current.pressure,
         feelsLike: res.data.current.feels_like,
         daily: res.data.daily,
+        icon: res.data.current.weather[0].icon,
+        clouds: res.data.current.clouds,
+        windSpeed: res.data.current.wind_speed
       })
-      console.log(res.data, 'cela data')
     })
   }
 
@@ -58,7 +63,7 @@ function Map() {
             setSelectedCity(city);
             fetchCurrentWeather(city);
           }}
-          // icon={{url: `http://openweathermap.org/img/wn/${getIconbyCity(city)}@2x.png` }}
+          // icon={{url: `http://openweathermap.org/img/wn/${data.icon}@2x.png` }}
         />
       ))}
 
@@ -70,7 +75,7 @@ function Map() {
             setSelectedCity(null)
           }}
         >
-          <InfoData data={data}/>
+          <WeatherCard data={data}/>
         </InfoWindow>
       )}
     </GoogleMap>
