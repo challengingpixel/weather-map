@@ -1,11 +1,11 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { GoogleMap, withScriptjs, withGoogleMap, Marker, InfoWindow } from 'react-google-maps';
 import citiesData from '../data/bg.json'
+import { weatherService } from '../services/WeatherService';
+import InfoData from './InfoData';
 
 // Map
 function Map() {
-  const API_KEY = 'f20381ae1fbc84fffcd2a4865eeab471'
   // Selected city state
   const [selectedCity, setSelectedCity] = useState(null)
   const [data, setData] = useState({
@@ -16,11 +16,11 @@ function Map() {
     daily: ''
   })
   const [icon, setIcon] = useState({})
-  
+
   const fetchCurrentWeather =(city)=> {
-    axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${(city.lat)}&lon=${(city.lng)}&exclude=hourly,minutely&units=metric&appid=${API_KEY}`)
+    weatherService(city)
     .then(res=> {
-      setData({...data, 
+      setData({...data,
         temperature: res.data.current.temp,
         humidity: res.data.current.humidity,
         pressure: res.data.current.pressure,
@@ -30,14 +30,14 @@ function Map() {
     })
   }
 
-  useEffect(() => {
-    citiesData.map((city)=> {
-      axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${(city.lat)}&lon=${(city.lng)}&appid=6f287b6d54bee8794a41d7776558222c&units=metric`)
-      .then(res=> {
-        setIcon(res.data.weather[0].icon)
-      })
-    })
-  }, [])
+  // useEffect(() => {
+  //   citiesData.map((city)=> {
+  //     axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${(city.lat)}&lon=${(city.lng)}&appid=6f287b6d54bee8794a41d7776558222c&units=metric`)
+  //     .then(res=> {
+  //       setIcon(res.data.weather[0].icon)
+  //     })
+  //   })
+  // }, [])
 
   return (
     <div>
@@ -62,13 +62,7 @@ function Map() {
             setSelectedCity(null)
           }}
         >
-          <ul style={{textAlign: 'left'}}>
-            <li>Temperature: {data.temperature}&deg;</li>
-            <li>Humidity: {data.humidity}%</li>
-            <li>pressure: {data.pressure}hPa</li> 
-            <li>Feels like: {data.feelsLike}&deg;</li>
-            <li>Icon: {icon}</li>
-          </ul>
+          <InfoData data={data}/>
         </InfoWindow>
       )}
     </GoogleMap>

@@ -1,10 +1,10 @@
 import './App.css';
 import React from 'react';
-import MainMap from '../src/components/Map'
+import Main from './pages/Main';
 
 function App() {
   return (
-    <MainMap/>
+    <Main/>
   );
 }
 
