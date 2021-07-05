@@ -1,5 +1,7 @@
 import React from 'react'
+import Header from '../components/Layout/Header';
 import MainMap from '../components/Map'
+import {styles} from "../styles/MainViewStyle";
 
 /**
  * Main screen page
@@ -7,7 +9,14 @@ import MainMap from '../components/Map'
  * @author petar.todorovski
  */
 export default function Main() {
+    const classes = styles()
+
     return (
-        <MainMap/>
+        <div className={classes.root}>
+            <div className="root-map-wrap">
+                <Header/>
+                <MainMap/>
+            </div>
+        </div>
     )
 }

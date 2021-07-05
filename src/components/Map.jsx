@@ -5,6 +5,7 @@ import citiesData from '../data/bg.json'
 import { weatherService } from '../services/WeatherService'
 import InfoData from './InfoData'
 import WeeklyWeather from './WeeklyWeather'
+import {styles} from "../styles/MapViewStyles";
 
 /**
  * Google Map component
@@ -35,6 +36,7 @@ function Map() {
         feelsLike: res.data.current.feels_like,
         daily: res.data.daily,
       })
+      console.log(res.data, 'cela data')
     })
   }
 
@@ -44,7 +46,7 @@ function Map() {
   }
 
   return (
-    <div>
+    <>
       <GoogleMap
       defaultZoom={7}
       defaultCenter={{ lat: 42.733883, lng: 25.485830 }}>
@@ -77,7 +79,7 @@ function Map() {
     {data.daily &&
       <WeeklyWeather data={data} getDay={getDay}/>
     }
-  </div>
+  </>
   )
 }
 // HOF WrappedMap
@@ -88,14 +90,13 @@ const WrappedMap = withScriptjs(withGoogleMap(Map))
  * @returns {JSX.Element}
  */
 export default function MainMap() {
+  const classes = styles()
   return (
-    <div className="App" style={{ width: '100vw', height: '100vh' }}>
       <WrappedMap
         googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyDxSOukAxfevdUOkNuBbN5LtK0AFi0drBM"
         loadingElement={<div style={{ height: `100%` }} />}
-        containerElement={<div style={{ height: `400px` }} />}
-        mapElement={<div style={{ height: `100%` }} />}
+        containerElement={<div className={classes.rootContainer} />}
+        mapElement={<div className={classes.rootMapElement} />}
       />
-    </div>
   );
 }

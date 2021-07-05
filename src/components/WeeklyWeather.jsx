@@ -1,25 +1,23 @@
+import { GridList, GridListTile, Typography } from '@material-ui/core'
 import React from 'react'
-
+import WeatherCard from './WeatherCard'
+import {styles} from '../styles/WeeklyWeatherStyle'
 /**
  * Weather forecast copmponent for 7days
  * @returns {JSX.Element}
  * @author petar.todorovski
  */
 export default function WeeklyWeather(props) {
+  const classes = styles()
   return (
-    <ul style={{textAlign: 'left'}}>
+    <div className={classes.rootWrap}>
+      <GridList className={classes.gridList} cols={2.5}>
         {props.data.daily.map((day, index)=>(
-        <li key={index}>
-          <div>{day.clouds}</div>
-          {index == 0 ?
-            <div>Today</div>: 
-            <div>{props.getDay(day.dt)}</div>
-          }
-          <div>
-            <img src={`http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`}/>
-          </div>
-        </li>
-      ))}
-    </ul>
+          <GridListTile key={index} style={{width: '200px', height: '100%'}}>
+            <WeatherCard getDay={props.getDay(day.dt)} day={day} index={index}/>
+          </GridListTile>
+        ))}
+      </GridList>
+    </div>
   )
 }
